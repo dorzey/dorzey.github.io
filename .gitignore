@@ -1,2 +1,4 @@
 _site
 *.tar*
+.c9
+*.lock
