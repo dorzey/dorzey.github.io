@@ -50,6 +50,7 @@ body {
     margin-right: 1.5rem;
 }
 
-.post.header {
+.post.header,
+.about.subheader {
     margin-left: 1.5rem;
 }
