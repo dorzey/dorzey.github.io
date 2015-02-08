@@ -13,7 +13,10 @@ title: dorzey.net
       <p>
           {{post.excerpt | remove: '<p>' | remove: '</p>'}} 
           <br/>
-          <a href="{{ post.url }}">&raquo; Read More</a>
+          <a class="read-more" href="{{ post.url }}">
+            <i class="fa fa-chevron-right"></i>
+            <span>&nbsp;Read More</span>
+          </a>
       </p>
     </div>
 </div>
