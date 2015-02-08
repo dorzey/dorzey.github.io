@@ -11,7 +11,7 @@ title: dorzey.net
     <div class="feed-content large-10 columns">
       <h3 class="subheader"><strong><a href="{{ post.url }}">{{ post.title }}</a></strong></h1>
       <p>
-          {{post.excerpt | strip_html}} 
+          {{post.excerpt | remove: '<p>' | remove: '</p>'}} 
           <br/>
           <a href="{{ post.url }}">&raquo; Read More</a>
       </p>
