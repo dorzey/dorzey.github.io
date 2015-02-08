@@ -2,6 +2,7 @@
 title:  "How I Built This Site"
 date:   2015-02-08 16:24:00
 layout: post
+categories:
 ---
 
 A summary of all the tech/tools/libraries I used in building this site.
