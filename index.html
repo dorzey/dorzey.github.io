@@ -2,18 +2,19 @@
 layout: default
 title: dorzey.net
 ---
-<!--
-<div id="home">
-  <h1>Blog Posts</h1>
-  <ul class="posts">
-    {% for post in site.posts %}
-      <li><span>{{ post.date | date_to_string }}</span> &raquo; <a href="{{ post.url }}">{{ post.title }}</a></li>
-    {% endfor %}
-  </ul>
-</div>
--->
+{% for post in site.posts %}
 <div class="row">
-     <div class="small-12 medium-12 large-11 columns">
-          <h1>Under construction</h1>
-     </div>
+    <hr/>
+    <div class="large-2 columns small-3">
+        <span>{{ post.date | date_to_string }}</span>
+    </div>
+    <div class="feed-content large-10 columns">
+      <h3 class="subheader"><strong><a href="{{ post.url }}">{{ post.title }}</a></strong></h1>
+      <p>
+          {{post.excerpt | strip_html}} 
+          <br/>
+          <a href="{{ post.url }}">&raquo; Read More</a>
+      </p>
+    </div>
 </div>
+{% endfor %}
