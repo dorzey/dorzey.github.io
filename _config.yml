@@ -1,3 +1,11 @@
 name: dorzey.net
 markdown: redcarpet
-pygments: false
+highlighter: pygments
+
+defaults:
+  -
+    scope:
+      path: ""
+      type: "posts"
+    values:
+      layout: "post"

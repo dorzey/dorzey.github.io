@@ -1,8 +1,7 @@
 ---
-layout: post
-title:  "Lorem ipsum "
+title:  "Lorem ipsum title"
 date:   2015-02-07 16:03:03
-categories: jekyll update
+categories: jekyll update test
 ---
 
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis congue finibus dui, eget fringilla neque. Nunc in nulla eu erat fringilla volutpat. Nullam augue ipsum, condimentum a sem non, finibus pretium justo. Vestibulum velit sapien, sodales non arcu vitae, aliquet gravida magna. Fusce ullamcorper blandit augue, non tincidunt eros sodales quis. Integer ac posuere felis. Vestibulum eget mi eget lectus porta vulputate. Sed varius imperdiet venenatis. Sed et mauris vel ex commodo mollis quis nec mauris. Aenean rhoncus, metus sed sodales volutpat, purus diam pharetra odio, a condimentum dolor dolor laoreet massa. Aliquam erat volutpat. Nulla facilisi. Ut ut interdum nisl.
