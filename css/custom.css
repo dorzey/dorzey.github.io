@@ -54,3 +54,11 @@ body {
 .about.subheader {
     margin-left: 1.5rem;
 }
+
+.about.inline-list {
+    float: right;
+}
+
+.about.inline-list a {
+    color: #ddd;
+}

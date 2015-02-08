@@ -3,8 +3,14 @@ layout: default
 title: dorzey.net
 ---
 <div class="row">
-     <hr/>
-     <h1 class="about subheader">About Me</h1>
-     <hr/>
-     {% include about_include.html %}
+     <div class="small-12 columns">
+          <hr/>
+          <h1 class="about subheader">About Me</h1>
+          <ul class="show-for-medium-down about inline-list">
+               {% include social_media.html %}
+          </ul>
+          <hr/>
+          </div>
+          {% include about_include.html %}
+     </div>
 </div>
