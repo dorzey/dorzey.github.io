@@ -1,6 +1,8 @@
 name: dorzey.net
 markdown: redcarpet
 highlighter: pygments
+description: dorzey.net - blog posts
+url: http://www.dorzey.net
 
 defaults:
   -
