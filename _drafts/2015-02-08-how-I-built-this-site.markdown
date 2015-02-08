@@ -5,14 +5,13 @@ layout: post
 categories:
 ---
 
-A summary of all the tech/tools/libraries I used in building this site.
+This site is hosted on [GitHub Pages](https://pages.github.com/) using the static website generator [Jekyll](http://jekyllrb.com/).
+The responsive front-end framework [Foundation](http://foundation.zurb.com/) is used for the layout. I've added minimal CSS for the styling.
+The icons come from [Font Awesome](https://fortawesome.github.io/Font-Awesome/).
 
-[GitHub Pages](https://pages.github.com/)
-[Jekyll](http://jekyllrb.com/)
-[Font Awesome](https://fortawesome.github.io/Font-Awesome/)
-[Foundation](http://foundation.zurb.com/)
-[Cloud9](https://c9.io/)
-[Dell Chromebook 11](http://www.dell.com/uk/business/p/chromebook-11/pd)
-[Disqus](https://disqus.com/)
+I used my [Dell Chromebook 11](http://www.dell.com/uk/business/p/chromebook-11/pd) to put it all together.
+This is also the first time I've used [Cloud9](https://c9.io/); a cloud powered IDE. 
+You can enable the Jekyll framework in Cloud9; instructions [here](https://docs.c9.io/frameworks_jekyll.html). 
+Cloud9 takes care of managing all the dependencies and even allows me to start a Jekyll serve to preview my changes.
 
-enable Jekyll in Cloud9 [here](https://docs.c9.io/frameworks_jekyll.html)
+[Disqus](https://disqus.com/) provides the comments for the posts.
