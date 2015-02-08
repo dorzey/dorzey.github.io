@@ -16,6 +16,7 @@ layout: default
     </div>
     
     <aside class="large-3 columns">
+          {% if page.categories.size > 0 %}
           <hr/>
           <h5 class="post subheader">Categories</h5>
           <ul class="side-nav">
@@ -24,5 +25,6 @@ layout: default
               {% endfor %}
           </ul>
           <hr/>
+          {% endif %}
     </aside>
 </div>
