@@ -59,6 +59,16 @@ body {
     float: right;
 }
 
-.about.inline-list a {
+.about.inline-list a,
+.social-share a {
     color: #ddd;
+}
+
+.social-share {
+    float: right;
+}
+
+.social-share a {
+    font-size: 1.5rem;
+    padding-left: 0.5rem;
 }
