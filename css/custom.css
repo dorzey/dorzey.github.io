@@ -3,6 +3,15 @@ body {
     color: #ddd;
 }
 
+p {
+    text-align: justify;
+    text-indent: 2rem;
+}
+
+.about p {
+    text-indent: 0;
+}
+
 .top-bar {
     border-bottom-color: #ddd;
     border-bottom-width: 0.1rem;
@@ -71,4 +80,9 @@ body {
 .social-share a {
     font-size: 1.5rem;
     padding-left: 0.5rem;
+}
+
+.post p {
+    margin-left: 1.75rem;
+    margin-right: 1.75rem;
 }
