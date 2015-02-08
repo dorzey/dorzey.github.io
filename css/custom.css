@@ -1,6 +1,8 @@
 body {
     background-color: #333;
     color: #ddd;
+    
+    font-family: 'VT323', ;
 }
 
 .top-bar {
@@ -29,6 +31,11 @@ body {
 
 .top-bar .title-area {
     height: 2.5rem;
+}
+
+.top-bar .title-area .name h1 a{
+    font-size: 1.7rem;
+    font-family: 'VT323', ;
 }
 
 .feed-content {
