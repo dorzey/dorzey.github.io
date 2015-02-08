@@ -12,5 +12,7 @@ A summary of all the tech/tools/libraries I used in building this site.
 [Font Awesome](https://fortawesome.github.io/Font-Awesome/)
 [Foundation](http://foundation.zurb.com/)
 [Cloud9](https://c9.io/)
+[Dell Chromebook 11](http://www.dell.com/uk/business/p/chromebook-11/pd)
+[Disqus](https://disqus.com/)
 
 enable Jekyll in Cloud9 [here](https://docs.c9.io/frameworks_jekyll.html)
