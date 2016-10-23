@@ -6,7 +6,7 @@
       {% assign template = social.service|prepend:"icon-"|append:".html" %}
       <span class="t-hackcss-social">
         <i class="t-hackcss-icon">{% include {{ template }} %}</i>
-        <a href="{{ social.link }}">{{ social.username }}</a>
+        <a href="{{ social.link }}" target="_blank">{{ social.username }}</a>
       </span>
     {% endfor %}
   </h3>
