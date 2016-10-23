@@ -1,23 +1,29 @@
 ---
 layout: default
-title: dorzey.net
 ---
-{% for post in site.posts %}
-<div class="row">
-    <hr/>
-    <div class="large-2 columns small-3">
-        <span>{{ post.date | date_to_string }}</span>
+<div>
+  <section>
+    <h1>Blog</h1>
+    <div class="grid t-hackcss-cards">
+      {% for post in site.posts %}
+      {% assign nth = forloop.index0 | modulo:2 %}
+      <div class="-6of12 t-hackcss-cards-cell">
+        <div class="card">
+          <header class="card-header">
+            <span>{{ post.date | date_to_string }} &raquo;
+              <a href="{{ post.url | prepend: site.baseurl }}" title="{{ project.name }}">
+                {{ post.title }}
+              </a>
+            </span>
+          </header>
+          <div class="card-content">
+            <div class="inner">
+                {{ post.short_description }}
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
     </div>
-    <div class="feed-content large-10 columns">
-      <h3 class="subheader"><strong><a href="{{ post.url }}">{{ post.title }}</a></strong></h1>
-      <p>
-          {{post.excerpt | remove: '<p>' | remove: '</p>'}} 
-          <br/>
-          <a class="read-more" href="{{ post.url }}">
-            <i class="fa fa-chevron-right"></i>
-            <span>&nbsp;Read More</span>
-          </a>
-      </p>
-    </div>
+  </section>
 </div>
-{% endfor %}

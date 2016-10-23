@@ -1,14 +1,52 @@
-name: dorzey.net
-markdown: redcarpet
-highlighter: pygments
-description: dorzey.net - blog posts
-url: http://www.dorzey.net
-twitter_username: dorzey
+# Welcome to Jekyll!
+#
+# This config file is meant for settings that affect your whole blog, values
+# which you are expected to set up once and rarely need to edit after that.
+# For technical reasons, this file is *NOT* reloaded automatically when you use
+# 'jekyll serve'. If you change this file, please restart the server process.
 
-defaults:
-  -
-    scope:
-      path: ""
-      type: "posts"
-    values:
-      layout: "post"     
+# Site settings
+title: dorzey.net
+description:
+baseurl: ""  # the subpath of your site, e.g. /blog
+url: http://dorzey.net  # the base hostname & protocol for your site
+
+# Build settings
+markdown: kramdown
+
+# Sass settings
+sass:
+  style: compressed
+
+# Theme settings
+theme_mode: markdown  # choices are: 'dark', 'standard', 'markdown'
+
+# Customizations
+your_name:
+email:
+
+navigation:
+  - text: Home
+    url: /
+  - text: About
+    url: /about
+
+social:
+  - service: github
+    username: dorzey
+    link: https://github.com/dorzey
+  - service: twitter
+    username: dorzey
+    link: https://twitter.com/dorzey
+  - service: instagram
+    username: dorzeyuk
+    link: https://www.instagram.com/dorzeyuk
+  - service: rss
+    username: feed
+    link: feed.xml
+
+# Plugins
+gems:
+  - jekyll-feed
+  - jekyll-seo-tag
+  - jekyll-sitemap

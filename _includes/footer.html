@@ -1,6 +1,14 @@
-<footer class="row">
-    <div class="large-12 columns">
-      <hr/>
-      <a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="Creative Commons License" style="border-width:0" src="http://i.creativecommons.org/l/by/4.0/80x15.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.
-    </div>
+<footer class="t-hackcss-footer">
+  <hr />
+
+  <h3 class="footer-heading">
+    {% for social in site.social %}
+      {% assign template = social.service|prepend:"icon-"|append:".html" %}
+      <span class="t-hackcss-social">
+        <i class="t-hackcss-icon">{% include {{ template }} %}</i>
+        <a href="{{ social.link }}">{{ social.username }}</a>
+      </span>
+    {% endfor %}
+  </h3>
+
 </footer>

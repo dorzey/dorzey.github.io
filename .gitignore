@@ -1,4 +1,3 @@
 _site
-*.tar*
-.c9
-Gemfile.lock
+.sass-cache
+.jekyll-metadata
