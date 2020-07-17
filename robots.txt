@@ -1,4 +1,4 @@
 User-agent: *
-Sitemap: https://www.dorzey.net/sitemap.xml
+Sitemap: http://www.dorzey.net/sitemap.xml
 Disallow: /ghost/
 Disallow: /p/
