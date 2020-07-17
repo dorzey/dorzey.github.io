@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <title>How we use Architectural Decision Records (ADRs) on Data Engineering</title>
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="stylesheet" type="text/css" href="/assets/built/screen.css?v=8f67c329ac" />
+
+    <link rel="canonical" href="https://engineering.autotrader.co.uk/2019/03/20/how-we-use-adrs-on-data-engineering.html" />
+    <meta name="referrer" content="no-referrer-when-downgrade" />
+    
+    <meta property="og:site_name" content="dorzey.net" />
+    <meta property="og:type" content="article" />
+    <meta property="og:title" content="How we use Architectural Decision Records (ADRs) on Data Engineering" />
+    <meta property="og:description" content="When I joined our data engineers over a year ago they had already adopted Architectural Decision Records (ADRs) to document architectural decisions made whilst building Auto Trader’s Data Platform. ADRs are listed in ThoughtWorks’ Technology Radar as a technique to adopt; our data engineers were the first team I’" />
+    <meta property="og:url" content="https://engineering.autotrader.co.uk/2019/03/20/how-we-use-adrs-on-data-engineering.html" />
+    <meta property="og:image" content="https://www.dorzey.net/content/images/2020/07/tmp-3.png" />
+    <meta property="article:published_time" content="2019-03-20T12:00:00.000Z" />
+    <meta property="article:modified_time" content="2020-07-17T22:46:26.000Z" />
+    <meta property="article:tag" content="Ways Of Working" />
+    
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="How we use Architectural Decision Records (ADRs) on Data Engineering" />
+    <meta name="twitter:description" content="When I joined our data engineers over a year ago they had already adopted Architectural Decision Records (ADRs) to document architectural decisions made whilst building Auto Trader’s Data Platform. ADRs are listed in ThoughtWorks’ Technology Radar as a technique to adopt; our data engineers were the first team I’" />
+    <meta name="twitter:url" content="https://engineering.autotrader.co.uk/2019/03/20/how-we-use-adrs-on-data-engineering.html" />
+    <meta name="twitter:image" content="https://www.dorzey.net/content/images/2020/07/tmp-3.png" />
+    <meta name="twitter:label1" content="Written by" />
+    <meta name="twitter:data1" content="Paul Doran" />
+    <meta name="twitter:label2" content="Filed under" />
+    <meta name="twitter:data2" content="Ways Of Working" />
+    <meta name="twitter:site" content="@dorzey" />
+    <meta name="twitter:creator" content="@dorzey" />
+    <meta property="og:image:width" content="1126" />
+    <meta property="og:image:height" content="314" />
+    
+    <script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "publisher": {
+        "@type": "Organization",
+        "name": "dorzey.net",
+        "url": "https://www.dorzey.net/",
+        "logo": {
+            "@type": "ImageObject",
+            "url": "https://www.dorzey.net/favicon.ico",
+            "width": 48,
+            "height": 48
+        }
+    },
+    "author": {
+        "@type": "Person",
+        "name": "Paul Doran",
+        "image": {
+            "@type": "ImageObject",
+            "url": "//www.gravatar.com/avatar/f55e27c409ab3c44635babf13150bb7e?s=250&d=mm&r=x",
+            "width": 250,
+            "height": 250
+        },
+        "url": "https://www.dorzey.net/author/dorzey/",
+        "sameAs": [
+            "https://www.dorzey.net",
+            "https://twitter.com/dorzey"
+        ]
+    },
+    "headline": "How we use Architectural Decision Records (ADRs) on Data Engineering",
+    "url": "https://www.dorzey.net/2019/03/20/how-we-use-architectural-decision-records-adrs-on-data-engineering/",
+    "datePublished": "2019-03-20T12:00:00.000Z",
+    "dateModified": "2020-07-17T22:46:26.000Z",
+    "image": {
+        "@type": "ImageObject",
+        "url": "https://www.dorzey.net/content/images/2020/07/tmp-3.png",
+        "width": 1126,
+        "height": 314
+    },
+    "keywords": "Ways Of Working",
+    "description": "When I joined our data engineers over a year ago they had already adopted\nArchitectural Decision Records (ADRs) to document architectural decisions made\nwhilst building Auto Trader’s Data Platform. ADRs are listed in ThoughtWorks’ \nTechnology Radar\n[https://www.thoughtworks.com/radar/techniques/lightweight-architecture-decision-records] \nas a technique to adopt; our data engineers were the first team I’ve worked on\nto use them. They have allowed us to capture the context and consequences of the\n",
+    "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "https://www.dorzey.net/"
+    }
+}
+    </script>
+
+    <meta name="generator" content="Ghost 3.25" />
+    <link rel="alternate" type="application/rss+xml" title="dorzey.net" href="https://www.dorzey.net/rss/" />
+
+</head>
+<body class="post-template tag-ways-of-working">
+
+    <div class="site-wrapper">
+
+        
+
+<header class="site-header">
+    <div class="outer site-nav-main">
+    <div class="inner">
+        <nav class="site-nav">
+    <div class="site-nav-left-wrapper">
+        <div class="site-nav-left">
+                <a class="site-nav-logo" href="https://www.dorzey.net">dorzey.net</a>
+            <div class="site-nav-content">
+                    <ul class="nav">
+    <li class="nav-home"><a href="https://www.dorzey.net/">Home</a></li>
+    <li class="nav-about-me"><a href="https://www.dorzey.net/about-me/">About Me</a></li>
+    <li class="nav-my-talks"><a href="https://www.dorzey.net/tag/my-talks/">My Talks</a></li>
+    <li class="nav-my-github"><a href="https://github.com/dorzey">My Github</a></li>
+</ul>
+
+                    <span class="nav-post-title dash">How we use Architectural Decision Records (ADRs) on Data Engineering</span>
+            </div>
+        </div>
+    </div>
+    <div class="site-nav-right">
+            <div class="social-links">
+                    <a class="social-link social-link-tw" href="https://twitter.com/dorzey" title="Twitter" target="_blank" rel="noopener"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><path d="M30.063 7.313c-.813 1.125-1.75 2.125-2.875 2.938v.75c0 1.563-.188 3.125-.688 4.625a15.088 15.088 0 0 1-2.063 4.438c-.875 1.438-2 2.688-3.25 3.813a15.015 15.015 0 0 1-4.625 2.563c-1.813.688-3.75 1-5.75 1-3.25 0-6.188-.875-8.875-2.625.438.063.875.125 1.375.125 2.688 0 5.063-.875 7.188-2.5-1.25 0-2.375-.375-3.375-1.125s-1.688-1.688-2.063-2.875c.438.063.813.125 1.125.125.5 0 1-.063 1.5-.25-1.313-.25-2.438-.938-3.313-1.938a5.673 5.673 0 0 1-1.313-3.688v-.063c.813.438 1.688.688 2.625.688a5.228 5.228 0 0 1-1.875-2c-.5-.875-.688-1.813-.688-2.75 0-1.063.25-2.063.75-2.938 1.438 1.75 3.188 3.188 5.25 4.25s4.313 1.688 6.688 1.813a5.579 5.579 0 0 1 1.5-5.438c1.125-1.125 2.5-1.688 4.125-1.688s3.063.625 4.188 1.813a11.48 11.48 0 0 0 3.688-1.375c-.438 1.375-1.313 2.438-2.563 3.188 1.125-.125 2.188-.438 3.313-.875z"/></svg>
+</a>
+            </div>
+                <a class="rss-button" href="https://feedly.com/i/subscription/feed/https://www.dorzey.net/rss/" title="RSS" target="_blank" rel="noopener"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="6.18" cy="17.82" r="2.18"/><path d="M4 4.44v2.83c7.03 0 12.73 5.7 12.73 12.73h2.83c0-8.59-6.97-15.56-15.56-15.56zm0 5.66v2.83c3.9 0 7.07 3.17 7.07 7.07h2.83c0-5.47-4.43-9.9-9.9-9.9z"/></svg>
+</a>
+
+    </div>
+</nav>
+    </div>
+</div></header>
+
+
+<main id="site-main" class="site-main outer">
+    <div class="inner">
+
+        <article class="post-full post tag-ways-of-working ">
+
+            <header class="post-full-header">
+
+                <section class="post-full-tags">
+                    <a href="/tag/ways-of-working/">Ways Of Working</a>
+                </section>
+
+                <h1 class="post-full-title">How we use Architectural Decision Records (ADRs) on Data Engineering</h1>
+
+
+                <div class="post-full-byline">
+
+                    <section class="post-full-byline-content">
+
+                        <ul class="author-list">
+                            <li class="author-list-item">
+
+                                <div class="author-card">
+                                    <img class="author-profile-image" src="//www.gravatar.com/avatar/f55e27c409ab3c44635babf13150bb7e?s&#x3D;250&amp;d&#x3D;mm&amp;r&#x3D;x" alt="Paul Doran" />
+                                    <div class="author-info">
+                                        <h2>Paul Doran</h2>
+                                        <p>Read <a href="/author/dorzey/">more posts</a> by this author.</p>
+                                    </div>
+                                </div>
+
+                                <a href="/author/dorzey/" class="author-avatar">
+                                    <img class="author-profile-image" src="//www.gravatar.com/avatar/f55e27c409ab3c44635babf13150bb7e?s&#x3D;250&amp;d&#x3D;mm&amp;r&#x3D;x" alt="Paul Doran" />
+                                </a>
+
+                            </li>
+                        </ul>
+
+                        <section class="post-full-byline-meta">
+                            <h4 class="author-name"><a href="/author/dorzey/">Paul Doran</a></h4>
+                            <div class="byline-meta-content">
+                                <time class="byline-meta-date" datetime="2019-03-20">20 Mar 2019</time>
+                                <span class="byline-reading-time"><span class="bull">&bull;</span> 4 min read</span>
+                            </div>
+                        </section>
+
+                    </section>
+
+
+                </div>
+            </header>
+
+            <figure class="post-full-image">
+                <img
+                    srcset="/content/images/size/w300/2020/07/tmp-3.png 300w,
+                            /content/images/size/w600/2020/07/tmp-3.png 600w,
+                            /content/images/size/w1000/2020/07/tmp-3.png 1000w,
+                            /content/images/size/w2000/2020/07/tmp-3.png 2000w"
+                    sizes="(max-width: 800px) 400px,
+                        (max-width: 1170px) 1170px,
+                            2000px"
+                    src="/content/images/size/w2000/2020/07/tmp-3.png"
+                    alt="How we use Architectural Decision Records (ADRs) on Data Engineering"
+                />
+            </figure>
+
+            <section class="post-full-content">
+                <div class="post-content">
+                    <p>When I joined our data engineers over a year ago they had already adopted Architectural Decision Records (ADRs) to document architectural decisions made whilst building Auto Trader’s Data Platform. ADRs are listed in ThoughtWorks’ <a href="https://www.thoughtworks.com/radar/techniques/lightweight-architecture-decision-records">Technology Radar</a> as a technique to adopt; our data engineers were the first team I’ve worked on to use them. They have allowed us to capture the context and consequences of the decisions we make; in a way that provides transparency and allows the whole team, and wider organisation, to contribute.</p><h2 id="what-is-an-adr">What is an ADR?</h2><p>ADRs are short text files that capture a single decision; see <a href="http://thinkrelevance.com/blog/2011/11/15/documenting-architecture-decisions">here</a> for a more in-depth description. The ADRs are numbered sequentially and monotonically; with no number reused.</p><p>We have adopted the below convention for our ADRs:</p><ul><li><strong>Title</strong>: A descriptive title in the following format: <code>&lt;ADR_ID - &lt;Title&gt;</code></li><li><strong>Status</strong>: It must have one of the below statuses.</li></ul><figure class="kg-card kg-image-card"><img src="http://engineering.autotrader.co.uk/images/2019-03-20/adr_state_diag.svg" class="kg-image" alt="ADR State Diagram"></figure><p>ADRs can only change status along the permitted transitions shown in the diagram above.</p><ul><li><strong>Context</strong>: The facts about why we need to make this decision. For example, they could be technological, such as we need to provide a certain capability; or they could be legal, such as compliance requirements.</li><li><strong>Decision</strong>: The actual decision. We provide a description of what we decided and provide justifications if needed. The decision should be an action we will undertake.</li><li><strong>Consequences</strong>: We provide a description of all the potential consequences; be they good, bad or neutral.</li></ul><h2 id="how-are-adrs-used-in-data-engineering">How are ADRs used in Data Engineering?</h2><p>Our data engineers maintain a website in <a href="https://jekyllrb.com/docs/github-pages/">GitHub Pages using Jekyll</a>. This was already used to share common links, jargon bust and build statuses - so the ADRs were placed there too. The squad website is readable by anyone at Auto Trader and contributions are welcome from anyone.</p><p>There are ADRs covering a wide range of subjects; how to partition data in the data lake, choice of business intelligence tool, proposed changes to metric algorithms, etc.</p><p>Having a place to record the ADRs is not enough. Consensus needs to be reached on whether ADRs should change status or not. We either address this at standup or with specific meetings for more in-depth discussions.</p><p>As the Data Platform was built lots of architectural decisions were made. We’ve found it worthwhile revisiting the decisions and see if they still hold; given <a href="https://engineering.autotrader.co.uk/2018/11/21/lessons-from-the-data-lake-architectural-decisions.html">what we’ve learnt</a> as the platform grows.</p><h3 id="benefits-of-adrs">Benefits of ADRs</h3><h4 id="one-clearly-reasoned-decisions">One: Clearly reasoned decisions</h4><p>The format of the ADRs enforces consistency in approach to documenting decisions. This makes it easier for both the author and the reader. The author knows what information to provide to produce an ADR, and the reader knows what to expect when reading an ADR and where to find it.</p><p>As the Data Platform is being built new technology is continuously adopted. The ADRs allow us to show stakeholders that we are in control of technology adoption and change.</p><h4 id="two-good-for-new-team-members">Two: Good for new team members</h4><p>I found the ADRs invaluable when I first joined Data Engineering. They allowed me to get up to speed quickly on why the team had made certain decisions. I could read the ADRs to gain a broad understanding of the architecture and to understand the context of the decision. The ADRs told me the history of the decisions made by Data Engineering.</p><h4 id="three-version-control-for-the-history-of-team-decisions">Three: Version control for the history of team decisions</h4><p>Given we are using GitHub Pages to store our ADRs we get a versioned history of their changes for free. I have found it useful to review the history of an ADR to understand its evolution or to know who to ask for clarification if something is unclear.</p><h4 id="four-keeping-them-lightweight">Four: Keeping them lightweight</h4><p>We don’t embrace ‘big design up front’ so the ADRs are not mammoth documents that nobody will ever read. The theme used for Jekyll has a built-in reading time estimator; the longest ADR to date has an estimated reading time of 4 minutes.</p><h3 id="challenges-of-adrs">Challenges of ADRs</h3><h4 id="one-deciding-when-to-create-one">One: Deciding when to create one</h4><p>There are no defined rules for when to create an ADR. Individuals are free to propose an ADR when they feel one is necessary. The hope being that by doing this we are capturing all the ADRs needed. I think over time, and with experience, we’ve gotten better at ensuring ADRs are written when required. There have been only a few occasions where I have felt that an ADR was missed.</p><h4 id="two-keeping-them-up-to-date">Two: Keeping them up-to-date</h4><p>The environment our data engineers work in is reasonably fast paced and lots of decisions can get made in a short space of time. I have found, on occasion, that the ADRs are out of date.</p><p>If we fail to write them in a timely manner then we reduce the value of the ADRs; future potential readers have no way of knowing what was not recorded. This was one of the reasons we now have semi-regular catch-ups to discuss ADRs.</p><h4 id="three-keeping-them-lightweight">Three: Keeping them lightweight</h4><p>The preference for keeping the ADRs lightweight can make them challenging to write. When writing an ADR you want to provide enough information to a future reader, but do it in a concise way. This requires good clear writing; which isn’t the easiest thing to achieve when documenting a detailed technical decision.</p><h2 id="conclusions">Conclusions</h2><p>We’ve found great value in ADRs as both a historical record of decisions and a way to capture the thinking behind architectural choices. Their number continues to grow.</p><p>They were incredibly useful to me when I first joined and I continue to find them a valuable tool.</p>
+                </div>
+            </section>
+
+
+
+        </article>
+
+    </div>
+</main>
+
+<aside class="read-next outer">
+    <div class="inner">
+        <div class="read-next-feed">
+
+                <article class="post-card post tag-my-talks tag-ml tag-big-data ">
+
+    <a class="post-card-image-link" href="/2019/05/16/continuous-deployment-of-machine-learning-models/">
+        <img class="post-card-image"
+            srcset="/content/images/size/w300/2020/07/tmp-1.png 300w,
+                    /content/images/size/w600/2020/07/tmp-1.png 600w,
+                    /content/images/size/w1000/2020/07/tmp-1.png 1000w,
+                    /content/images/size/w2000/2020/07/tmp-1.png 2000w"
+            sizes="(max-width: 1000px) 400px, 700px"
+            loading="lazy"
+            src="/content/images/size/w600/2020/07/tmp-1.png"
+            alt="Continuous deployment of machine learning models"
+        />
+    </a>
+
+    <div class="post-card-content">
+
+        <a class="post-card-content-link" href="/2019/05/16/continuous-deployment-of-machine-learning-models/">
+
+            <header class="post-card-header">
+                    <div class="post-card-primary-tag">My Talks</div>
+                <h2 class="post-card-title">Continuous deployment of machine learning models</h2>
+            </header>
+
+            <section class="post-card-excerpt">
+                    <p>This talk describes how Auto Trader launched a suite of new machine learning models with the ability serve low-latency predictions in real time. These models are automatically retrained and redeployed</p>
+            </section>
+
+        </a>
+
+        <footer class="post-card-meta">
+            <ul class="author-list">
+                <li class="author-list-item">
+            
+                    <div class="author-name-tooltip">
+                        Paul Doran
+                    </div>
+            
+                    <a href="/author/dorzey/" class="static-avatar">
+                        <img class="author-profile-image" src="//www.gravatar.com/avatar/f55e27c409ab3c44635babf13150bb7e?s&#x3D;250&amp;d&#x3D;mm&amp;r&#x3D;x" alt="Paul Doran" />
+                    </a>
+                </li>
+            </ul>
+            <div class="post-card-byline-content">
+                <span><a href="/author/dorzey/">Paul Doran</a></span>
+                <span class="post-card-byline-date"><time datetime="2019-05-16">16 May 2019</time> <span class="bull">&bull;</span> 1 min read</span>
+            </div>
+        </footer>
+
+    </div>
+
+</article>
+
+        </div>
+    </div>
+</aside>
+
+
+
+
+        <footer class="site-footer outer">
+            <div class="site-footer-content inner">
+                <section class="copyright"><a href="https://www.dorzey.net">dorzey.net</a> &copy; 2020</section>
+                <nav class="site-footer-nav">
+                    <a href="https://www.dorzey.net">Latest Posts</a>
+                    
+                    <a href="https://twitter.com/dorzey" target="_blank" rel="noopener">Twitter</a>
+                    <a href="https://ghost.org" target="_blank" rel="noopener">Ghost</a>
+                </nav>
+            </div>
+        </footer>
+
+    </div>
+
+
+    <script
+        src="https://code.jquery.com/jquery-3.4.1.min.js"
+        integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+        crossorigin="anonymous">
+    </script>
+    <script src="/assets/built/casper.js?v=8f67c329ac"></script>
+
+    <script>
+        // Parse the URL parameter
+        function getParameterByName(name, url) {
+            if (!url) url = window.location.href;
+            name = name.replace(/[\[\]]/g, "\\$&");
+            var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+                results = regex.exec(url);
+            if (!results) return null;
+            if (!results[2]) return '';
+            return decodeURIComponent(results[2].replace(/\+/g, " "));
+        }
+
+        // Give the parameter a variable name
+        var action = getParameterByName('action');
+
+        $(document).ready(function () {
+            if (action == 'subscribe') {
+                $('body').addClass("subscribe-success");
+            }
+
+            $('.subscribe-success-message .subscribe-close').click(function () {
+                $('.subscribe-success-message').addClass('close');
+            });
+
+            // Reset form on opening subscrion overlay
+            $('.subscribe-button').click(function() {
+                $('.subscribe-overlay form').removeClass();
+                $('.subscribe-email').val('');
+            });
+        });
+    </script>
+
+    <script>
+    $(document).ready(function () {
+        // FitVids - start
+        var $postContent = $(".post-full-content");
+        $postContent.fitVids();
+        // FitVids - end
+
+        // Replace nav with title on scroll - start
+        Casper.stickyNavTitle({
+            navSelector: '.site-nav-main',
+            titleSelector: '.post-full-title',
+            activeClass: 'nav-post-title-active'
+        });
+        // Replace nav with title on scroll - end
+
+        // Hover on avatar
+        var hoverTimeout;
+        $('.author-list-item').hover(function () {
+            var $this = $(this);
+
+            clearTimeout(hoverTimeout);
+
+            $('.author-card').removeClass('hovered');
+            $(this).children('.author-card').addClass('hovered');
+
+        }, function () {
+            var $this = $(this);
+
+            hoverTimeout = setTimeout(function () {
+                $this.children('.author-card').removeClass('hovered');
+            }, 800);
+        });
+    });
+</script>
+
+
+    
+
+</body>
+</html>
