@@ -9,7 +9,7 @@
     <meta name="HandheldFriendly" content="True" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <link rel="stylesheet" type="text/css" href="/assets/built/screen.css?v=0bc9ab276f" />
+    <link rel="stylesheet" type="text/css" href="/assets/built/screen.css?v=6cfdb318e0" />
 
     <link rel="icon" href="/favicon.png" type="image/png" />
     <link rel="canonical" href="http://www.dorzey.net/2019/12/16/big-data-ldn-2019-taking-control-of-user-analytics-with-snowplow/" />
@@ -90,7 +90,7 @@
 }
     </script>
 
-    <meta name="generator" content="Ghost 3.33" />
+    <meta name="generator" content="Ghost 3.42" />
     <link rel="alternate" type="application/rss+xml" title="dorzey.net" href="http://www.dorzey.net/rss/" />
 
 </head>
@@ -234,32 +234,32 @@
                     </footer>
                 </article>
 
-                <article class="post-card post tag-reading-list tag-data-engineering ">
+                <article class="post-card post tag-migration tag-ways-of-working tag-analytics tag-big-data ">
 
-    <a class="post-card-image-link" href="/2020/11/23/5-interesting-data-engineering-blog-posts-ive-recently-read/">
+    <a class="post-card-image-link" href="/2023/11/14/how-miro-migrated-its-analytics-event-tracking-system/">
         <img class="post-card-image"
-            srcset="/content/images/size/w300/2020/11/recently-read.jpg 300w,
-                    /content/images/size/w600/2020/11/recently-read.jpg 600w,
-                    /content/images/size/w1000/2020/11/recently-read.jpg 1000w,
-                    /content/images/size/w2000/2020/11/recently-read.jpg 2000w"
+            srcset="/content/images/size/w300/2023/11/birds.png 300w,
+                    /content/images/size/w600/2023/11/birds.png 600w,
+                    /content/images/size/w1000/2023/11/birds.png 1000w,
+                    /content/images/size/w2000/2023/11/birds.png 2000w"
             sizes="(max-width: 1000px) 400px, 700px"
             loading="lazy"
-            src="/content/images/size/w600/2020/11/recently-read.jpg"
-            alt="5 Interesting Data Engineering Blog Posts I&#x27;ve Recently Read"
+            src="/content/images/size/w600/2023/11/birds.png"
+            alt="How Miro migrated its analytics event tracking system"
         />
     </a>
 
     <div class="post-card-content">
 
-        <a class="post-card-content-link" href="/2020/11/23/5-interesting-data-engineering-blog-posts-ive-recently-read/">
+        <a class="post-card-content-link" href="/2023/11/14/how-miro-migrated-its-analytics-event-tracking-system/">
 
             <header class="post-card-header">
-                    <div class="post-card-primary-tag">Reading List</div>
-                <h2 class="post-card-title">5 Interesting Data Engineering Blog Posts I&#x27;ve Recently Read</h2>
+                    <div class="post-card-primary-tag">Migration</div>
+                <h2 class="post-card-title">How Miro migrated its analytics event tracking system</h2>
             </header>
 
             <section class="post-card-excerpt">
-                    <p>I found all these worthwhile. They cover the breadth of Data Engineering. Let me know if you have anything that you think I would enjoy reading.</p>
+                    <p>In this post, we’ll take you behind the scenes of how we migrated our analytics event system — responsible for handling ~3.5 billion events per day — without losing a</p>
             </section>
 
         </a>
@@ -279,7 +279,7 @@
             </ul>
             <div class="post-card-byline-content">
                 <span><a href="/author/dorzey/">Paul Doran</a></span>
-                <span class="post-card-byline-date"><time datetime="2020-11-23">23 Nov 2020</time> <span class="bull">&bull;</span> 1 min read</span>
+                <span class="post-card-byline-date"><time datetime="2023-11-14">14 Nov 2023</time> <span class="bull">&bull;</span> 5 min read</span>
             </div>
         </footer>
 
@@ -348,7 +348,7 @@
 
         <footer class="site-footer outer">
             <div class="site-footer-content inner">
-                <section class="copyright"><a href="http://www.dorzey.net">dorzey.net</a> &copy; 2020</section>
+                <section class="copyright"><a href="http://www.dorzey.net">dorzey.net</a> &copy; 2023</section>
                 <nav class="site-footer-nav">
                     <a href="http://www.dorzey.net">Latest Posts</a>
                     
@@ -366,7 +366,7 @@
         integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
         crossorigin="anonymous">
     </script>
-    <script src="/assets/built/casper.js?v=0bc9ab276f"></script>
+    <script src="/assets/built/casper.js?v=6cfdb318e0"></script>
 
     <script>
         // Parse the URL parameter
@@ -382,14 +382,19 @@
 
         // Give the parameter a variable name
         var action = getParameterByName('action');
+        var success = getParameterByName('success');
 
         $(document).ready(function () {
-            if (action == 'subscribe') {
-                $('body').addClass("subscribe-success");
+            if (action == 'subscribe' && (success === null || success === 'true')) {
+                $('body').addClass('subscribe-success');
             }
 
-            $('.subscribe-success-message .subscribe-close').click(function () {
-                $('.subscribe-success-message').addClass('close');
+            if (action == 'subscribe' && success === 'false') {
+                $('body').addClass('subscribe-failure');
+            }
+
+            $('.subscribe-notification .subscribe-close-button').click(function () {
+                $('.subscribe-notification').addClass('close');
             });
 
             // Reset form on opening subscrion overlay
