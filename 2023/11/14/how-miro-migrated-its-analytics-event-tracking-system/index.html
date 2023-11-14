@@ -1,15 +1,21 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark-mode">
 <head>
 
+    <title>How Miro migrated its analytics event tracking system | Miro Engineering | Nov, 2023</title>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-
-    <title>How Miro migrated its analytics event tracking system | Miro Engineering | Nov, 2023</title>
     <meta name="HandheldFriendly" content="True" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <link rel="stylesheet" type="text/css" href="/assets/built/screen.css?v=6cfdb318e0" />
+    <style>
+        :root {
+            --button-bg-color: #ffffff;
+            --button-text-color: var(--color-darkgrey);
+        }
+    </style>
+
+    <link rel="stylesheet" type="text/css" href="/assets/built/screen.css?v=bdc8b6f34c" />
 
     <meta name="description" content="Learn how Miro migrated its analytics event system, Event Hub, to a new deployment without losing a single event or causing delays." />
     <link rel="icon" href="/favicon.png" type="image/png" />
@@ -92,132 +98,124 @@
 }
     </script>
 
-    <meta name="generator" content="Ghost 3.42" />
+    <meta name="generator" content="Ghost 4.48" />
     <link rel="alternate" type="application/rss+xml" title="dorzey.net" href="http://www.dorzey.net/rss/" />
+    
+    <script defer src="/public/cards.min.js?v=bdc8b6f34c"></script><style>:root {--ghost-accent-color: #15171A;}</style>
+    <link rel="stylesheet" type="text/css" href="/public/cards.min.css?v=bdc8b6f34c">
 
 </head>
 <body class="post-template tag-migration tag-ways-of-working tag-analytics tag-big-data">
+<div class="viewport">
 
-    <div class="site-wrapper">
+    <header id="gh-head" class="gh-head has-cover">
+        <nav class="gh-head-inner inner gh-container">
 
-        
-
-<header class="site-header">
-    <div class="outer site-nav-main">
-    <div class="inner">
-        <nav class="site-nav">
-    <div class="site-nav-left-wrapper">
-        <div class="site-nav-left">
-                <a class="site-nav-logo" href="http://www.dorzey.net">dorzey.net</a>
-            <div class="site-nav-content">
-                    <ul class="nav">
+            <div class="gh-head-brand">
+                <a class="gh-head-logo" href="http://www.dorzey.net">
+                        dorzey.net
+                </a>
+                <a class="gh-burger" role="button">
+                    <div class="gh-burger-box">
+                        <div class="gh-burger-inner"></div>
+                    </div>
+                </a>
+            </div>
+            <div class="gh-head-menu">
+                <ul class="nav">
     <li class="nav-home"><a href="http://www.dorzey.net/">Home</a></li>
     <li class="nav-about-me"><a href="http://www.dorzey.net/about-me/">About Me</a></li>
     <li class="nav-my-talks"><a href="http://www.dorzey.net/tag/my-talks/">My Talks</a></li>
     <li class="nav-my-github"><a href="https://github.com/dorzey">My Github</a></li>
 </ul>
 
-                    <span class="nav-post-title dash">How Miro migrated its analytics event tracking system</span>
             </div>
-        </div>
-    </div>
-    <div class="site-nav-right">
-            <div class="social-links">
-                    <a class="social-link social-link-tw" href="https://twitter.com/dorzey" title="Twitter" target="_blank" rel="noopener"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><path d="M30.063 7.313c-.813 1.125-1.75 2.125-2.875 2.938v.75c0 1.563-.188 3.125-.688 4.625a15.088 15.088 0 0 1-2.063 4.438c-.875 1.438-2 2.688-3.25 3.813a15.015 15.015 0 0 1-4.625 2.563c-1.813.688-3.75 1-5.75 1-3.25 0-6.188-.875-8.875-2.625.438.063.875.125 1.375.125 2.688 0 5.063-.875 7.188-2.5-1.25 0-2.375-.375-3.375-1.125s-1.688-1.688-2.063-2.875c.438.063.813.125 1.125.125.5 0 1-.063 1.5-.25-1.313-.25-2.438-.938-3.313-1.938a5.673 5.673 0 0 1-1.313-3.688v-.063c.813.438 1.688.688 2.625.688a5.228 5.228 0 0 1-1.875-2c-.5-.875-.688-1.813-.688-2.75 0-1.063.25-2.063.75-2.938 1.438 1.75 3.188 3.188 5.25 4.25s4.313 1.688 6.688 1.813a5.579 5.579 0 0 1 1.5-5.438c1.125-1.125 2.5-1.688 4.125-1.688s3.063.625 4.188 1.813a11.48 11.48 0 0 0 3.688-1.375c-.438 1.375-1.313 2.438-2.563 3.188 1.125-.125 2.188-.438 3.313-.875z"/></svg>
+            <div class="gh-head-actions">
+                <div class="gh-social">
+                        <a class="gh-social-twitter" href="https://twitter.com/dorzey" title="Twitter" target="_blank" rel="noopener"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><path d="M30.063 7.313c-.813 1.125-1.75 2.125-2.875 2.938v.75c0 1.563-.188 3.125-.688 4.625a15.088 15.088 0 0 1-2.063 4.438c-.875 1.438-2 2.688-3.25 3.813a15.015 15.015 0 0 1-4.625 2.563c-1.813.688-3.75 1-5.75 1-3.25 0-6.188-.875-8.875-2.625.438.063.875.125 1.375.125 2.688 0 5.063-.875 7.188-2.5-1.25 0-2.375-.375-3.375-1.125s-1.688-1.688-2.063-2.875c.438.063.813.125 1.125.125.5 0 1-.063 1.5-.25-1.313-.25-2.438-.938-3.313-1.938a5.673 5.673 0 0 1-1.313-3.688v-.063c.813.438 1.688.688 2.625.688a5.228 5.228 0 0 1-1.875-2c-.5-.875-.688-1.813-.688-2.75 0-1.063.25-2.063.75-2.938 1.438 1.75 3.188 3.188 5.25 4.25s4.313 1.688 6.688 1.813a5.579 5.579 0 0 1 1.5-5.438c1.125-1.125 2.5-1.688 4.125-1.688s3.063.625 4.188 1.813a11.48 11.48 0 0 0 3.688-1.375c-.438 1.375-1.313 2.438-2.563 3.188 1.125-.125 2.188-.438 3.313-.875z"/></svg>
 </a>
-            </div>
-                <a class="rss-button" href="https://feedly.com/i/subscription/feed/http://www.dorzey.net/rss/" title="RSS" target="_blank" rel="noopener"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="6.18" cy="17.82" r="2.18"/><path d="M4 4.44v2.83c7.03 0 12.73 5.7 12.73 12.73h2.83c0-8.59-6.97-15.56-15.56-15.56zm0 5.66v2.83c3.9 0 7.07 3.17 7.07 7.07h2.83c0-5.47-4.43-9.9-9.9-9.9z"/></svg>
-</a>
-
-    </div>
-</nav>
-    </div>
-</div></header>
-
-
-<main id="site-main" class="site-main outer">
-    <div class="inner">
-
-        <article class="post-full post tag-migration tag-ways-of-working tag-analytics tag-big-data ">
-
-            <header class="post-full-header">
-
-                <section class="post-full-tags">
-                    <a href="/tag/migration/">Migration</a>
-                </section>
-
-                <h1 class="post-full-title">How Miro migrated its analytics event tracking system</h1>
-
-
-                <div class="post-full-byline">
-
-                    <section class="post-full-byline-content">
-
-                        <ul class="author-list">
-                            <li class="author-list-item">
-
-                                <div class="author-card">
-                                    <img class="author-profile-image" src="//www.gravatar.com/avatar/f55e27c409ab3c44635babf13150bb7e?s&#x3D;250&amp;d&#x3D;mm&amp;r&#x3D;x" alt="Paul Doran" />
-                                    <div class="author-info">
-                                        <h2>Paul Doran</h2>
-                                        <p>Read <a href="/author/dorzey/">more posts</a> by this author.</p>
-                                    </div>
-                                </div>
-
-                                <a href="/author/dorzey/" class="author-avatar">
-                                    <img class="author-profile-image" src="//www.gravatar.com/avatar/f55e27c409ab3c44635babf13150bb7e?s&#x3D;250&amp;d&#x3D;mm&amp;r&#x3D;x" alt="Paul Doran" />
-                                </a>
-
-                            </li>
-                        </ul>
-
-                        <section class="post-full-byline-meta">
-                            <h4 class="author-name"><a href="/author/dorzey/">Paul Doran</a></h4>
-                            <div class="byline-meta-content">
-                                <time class="byline-meta-date" datetime="2023-11-14">14 Nov 2023</time>
-                                <span class="byline-reading-time"><span class="bull">&bull;</span> 5 min read</span>
-                            </div>
-                        </section>
-
-                    </section>
-
-
                 </div>
-            </header>
 
-            <figure class="post-full-image">
+                    <a class="gh-head-button" href="#/portal/signup" data-portal="signup">Subscribe</a>
+            </div>
+        </nav>
+    </header>
+
+    <div class="site-content">
+        
+
+
+
+<main id="site-main" class="site-main">
+    <article class="article post tag-migration tag-ways-of-working tag-analytics tag-big-data ">
+
+        <header class="article-header gh-canvas">
+
+            <section class="article-tag">
+                <a href="http://www.dorzey.net/tag/migration/">Migration</a>
+            </section>
+
+            <h1 class="article-title">How Miro migrated its analytics event tracking system</h1>
+
+
+            <div class="article-byline">
+                <section class="article-byline-content">
+                    <ul class="author-list">
+                        <li class="author-list-item">
+                            <a href="/author/dorzey/" class="author-avatar">
+                                <img class="author-profile-image" src="//www.gravatar.com/avatar/f55e27c409ab3c44635babf13150bb7e?s&#x3D;250&amp;d&#x3D;mm&amp;r&#x3D;x" alt="Paul Doran" />
+                            </a>
+                        </li>
+                    </ul>
+                    <div class="article-byline-meta">
+                        <h4 class="author-name"><a href="/author/dorzey/">Paul Doran</a></h4>
+                        <div class="byline-meta-content">
+                            <time class="byline-meta-date" datetime="2023-11-14">Nov 14, 2023</time>
+                            <span class="byline-reading-time"><span class="bull">&bull;</span> 5 min read</span>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <figure class="article-image">
                 <img
                     srcset="/content/images/size/w300/2023/11/birds.png 300w,
                             /content/images/size/w600/2023/11/birds.png 600w,
                             /content/images/size/w1000/2023/11/birds.png 1000w,
                             /content/images/size/w2000/2023/11/birds.png 2000w"
-                    sizes="(max-width: 800px) 400px,
-                        (max-width: 1170px) 1170px,
-                            2000px"
+                    sizes="(min-width: 1400px) 1400px, 92vw"
                     src="/content/images/size/w2000/2023/11/birds.png"
                     alt="How Miro migrated its analytics event tracking system"
                 />
             </figure>
+        </header>
 
-            <section class="post-full-content">
-                <div class="post-content">
-                    <p>In this post, we’ll take you behind the scenes of how we migrated our analytics event system — responsible for handling ~3.5 billion events per day — without losing a single event. We’ll go into the technical details and the strategy we used that allowed us to leverage Kubernetes, Kafka, Apache Spark, and Airflow to safeguard the events that power some of Miro’s key business decisions.</p><h1 id="in-the-beginning-2017-2021">In the beginning: 2017–2021</h1><p>By 2017 Miro had reached 1M users. In September of that year, Miro put its in-house analytics event tracking system, called Event Hub, into production. On its first day it received its first 1.5 million events. Event Hub consists of the following:</p><ul><li>A Spring Boot API that collects events from various backend and frontend clients; the events are written to a Kafka topic;</li><li>A Kafka that is used as a durable message broker;</li><li>An Apache Spark Data Pipeline, in Java, that runs once a day. It conforms the events into a common format, applies enrichments, and makes the events available for downstream use cases.</li></ul><p>The initial deployment of Event Hub was done as a raw deployment on EC2. Only some parts of the deployment were done as infrastructure-as-code, and it turned out to be remarkably stable with very few incidents.</p><h1 id="during-hypergrowth-2021-2022">During Hypergrowth: 2021–2022</h1><p>During 2021–2022, Miro experienced dramatic growth, reaching 30M registered users in 2021. In turn, our Event Hub instance was receiving around 2.5 billion events per day.</p><p>Miro also grew its data team during this time, which helped us improve our data capabilities. This led to the data pipeline being simplified, re-implemented in Scala Spark, migrated to Databricks, and being orchestrated via Airflow. This allowed the team to increase the frequency the pipeline ran to hourly. This allowed us to both provide fresher data to downstream analytics use cases and reduce our mean time to recover if there was a failure.</p><p>In this period, Miro also adopted Kubernetes and outlined a golden path for teams to deploy their services.</p><h1 id="decision-time-2023">Decision time: 2023</h1><p>By the beginning of 2023 we were processing around 3 billion events per day. At the same time, a few circumstances coincided which altogether led us to the decision of completing the migration:</p><ol><li>Event quality was beginning to suffer. This negatively impacted Miro’s ability to make reliable data-informed decisions. At the beginning, Miro deliberately chose a permissive model for events, but once the organization scaled this became unsustainable. We wanted to introduce Event Validation to improve the quality, but this would have been risky to do on the existing infrastructure.</li><li>We were asked to bring the Event Hub deployment in line with Miro best practices and leverage all the internal tooling around Kubernetes, Istio, and Terraform.</li><li>While Event Hub had very few incidents during its lifespan, maintenance and upgrades were a delicate matter. It was now running on several EC2 instances. We knew that losing even just one of them would have meant hours of downtime. The number of moving parts was destined to increase with the growth in Miro users. And so was the probability of a catastrophic failure.</li></ol><h1 id="the-migration-2023">The migration: 2023</h1><p>We decided to migrate, but now we needed to understand how to make it happen.</p><p><em>“Plans are of little importance, but planning is essential” — Winston Churchill.</em></p><figure class="kg-card kg-image-card kg-card-hascaption"><img src="https://miro.medium.com/v2/resize:fit:1400/1*-np_lSdG-TrSGGzrBkAZkw.png" class="kg-image" alt="Birds migrating"><figcaption><em>Birds migrating</em></figcaption></figure><h2 id="1-define-the-plan">1. Define the plan</h2><p>We started the process knowing that we needed a plan. But we all agreed that we would not have all the knowledge we needed at the beginning, so we should be adaptable to changing the plan as we progressed. We had a regular sync on progress to understand if we needed to update the plan.</p><h2 id="2-create-infrastructure">2. Create infrastructure</h2><p>We needed somewhere to deploy Event Hub, so we first created the infrastructure needed for our deployment. We could reuse some parts of the existing infrastructure, like Kubernetes, but other parts, like Kafka, had to be created.</p><h2 id="3-observability">3. Observability</h2><p>The previous iteration of Event Hub had been running for years. The engineering team that cared lovingly for this system grew intimately familiar with its usage profile. But the significant design changes we were about to make were a source of uncertainty. Observability proved to be crucial to proceed with confidence. Luckily, a lot of instrumentation at the API Gateway, Kubernetes, and Infrastructure level was provided out of the box by Miro internal tooling. Moreover, the experience with the previous system informed us where to focus our attention first.</p><h2 id="4-migrate-event-hub-to-staging">4. Migrate Event Hub to staging</h2><p>Once we had the infrastructure necessary in the staging environment, we could deploy Event Hub to it. At this point we were able to go end to end. We could post an event into the API, move it through Kafka, and process it through the Spark Data Pipeline.</p><h2 id="5-load-test">5. Load test</h2><p>We were now running Event Hub in staging, but it was new infrastructure. We were unsure how it would perform, and if the infrastructure was correctly sized. Paired with the effort put toward observability highlighted above, we were able to run a load test that provided a realistic production volume of events. This required several iterations to correctly size the infrastructure to achieve the necessary performance. This also provided valuable insight into how we should define our auto-scaling policies.</p><h2 id="6-deploy-to-production">6. Deploy to production</h2><p>We were now confident that we could deploy Event Hub to production and begin the process of switching the event tracking over to it.</p><h2 id="7-prepare-the-data-pipelines">7. Prepare the data pipelines</h2><p>Before we could switch the traffic, we had to make some changes to the Spark Data Pipeline so it could process the events from the old Event Hub and the new Event Hub deployments.</p><h2 id="8-switch-clients">8. Switch Clients</h2><p>Now we could switch over the event tracking. We had identified ~40 different services/clients sending events to Event Hub. Each one needed to be updated to point to the new infrastructure. We started with the clients with the lowest priority and/or least critical events first. This allowed us to validate the full end-to-end flow while minimizing the risk if we did hit a problem. It took about 6 weeks to switch over all the clients and lots of coordination with different engineering teams.</p><h2 id="9-success">9. Success</h2><p>By August 2023 we had migrated to the new deployment and were processing ~3.5 billion events per day. We had successfully switched to the new Event Hub deployment and not lost a single event or caused any delays to the data we deliver to the downstream use cases.</p><h1 id="the-lessons-we-learned">The lessons we learned</h1><p>During the migration we learned a few valuable lessons:</p><ul><li><strong><strong>Make your work visible</strong></strong></li></ul><p>When many teams, streams, and stakeholders are involved, you must be transparent about the work in progress and what has been completed.</p><ul><li><strong><strong>Individuals reaching out made a big difference</strong></strong></li></ul><p>While we aligned on expectations and priorities, we hit the inevitable problem that teams had conflicting priorities, deadlines, etc. We found out that individuals reaching out to people made a big difference. We were able to provide the context and specific help to each of the teams to help the work to be completed faster.</p><ul><li><strong><strong>Bake in event quality from the beginning</strong></strong></li></ul><p>If you’re starting from scratch, then make event quality a first class concern from the beginning. Going back and adding it was much more difficult and carried more risk.</p><ul><li><strong><strong>Lean on internal tooling</strong></strong></li></ul><p>A lot of the machinery that allowed us to pull this off was available because of the excellent work other teams in Miro did. Event Hub evolved from being directly exposed to the public internet through a simple load balancer to benefitting from state of the art scalable infrastructure and DDoS protection.</p>
-                </div>
-            </section>
-
+        <section class="gh-content gh-canvas">
+            <p>In this post, we’ll take you behind the scenes of how we migrated our analytics event system — responsible for handling ~3.5 billion events per day — without losing a single event. We’ll go into the technical details and the strategy we used that allowed us to leverage Kubernetes, Kafka, Apache Spark, and Airflow to safeguard the events that power some of Miro’s key business decisions.</p><h1 id="in-the-beginning-2017-2021">In the beginning: 2017–2021</h1><p>By 2017 Miro had reached 1M users. In September of that year, Miro put its in-house analytics event tracking system, called Event Hub, into production. On its first day it received its first 1.5 million events. Event Hub consists of the following:</p><ul><li>A Spring Boot API that collects events from various backend and frontend clients; the events are written to a Kafka topic;</li><li>A Kafka that is used as a durable message broker;</li><li>An Apache Spark Data Pipeline, in Java, that runs once a day. It conforms the events into a common format, applies enrichments, and makes the events available for downstream use cases.</li></ul><p>The initial deployment of Event Hub was done as a raw deployment on EC2. Only some parts of the deployment were done as infrastructure-as-code, and it turned out to be remarkably stable with very few incidents.</p><h1 id="during-hypergrowth-2021-2022">During Hypergrowth: 2021–2022</h1><p>During 2021–2022, Miro experienced dramatic growth, reaching 30M registered users in 2021. In turn, our Event Hub instance was receiving around 2.5 billion events per day.</p><p>Miro also grew its data team during this time, which helped us improve our data capabilities. This led to the data pipeline being simplified, re-implemented in Scala Spark, migrated to Databricks, and being orchestrated via Airflow. This allowed the team to increase the frequency the pipeline ran to hourly. This allowed us to both provide fresher data to downstream analytics use cases and reduce our mean time to recover if there was a failure.</p><p>In this period, Miro also adopted Kubernetes and outlined a golden path for teams to deploy their services.</p><h1 id="decision-time-2023">Decision time: 2023</h1><p>By the beginning of 2023 we were processing around 3 billion events per day. At the same time, a few circumstances coincided which altogether led us to the decision of completing the migration:</p><ol><li>Event quality was beginning to suffer. This negatively impacted Miro’s ability to make reliable data-informed decisions. At the beginning, Miro deliberately chose a permissive model for events, but once the organization scaled this became unsustainable. We wanted to introduce Event Validation to improve the quality, but this would have been risky to do on the existing infrastructure.</li><li>We were asked to bring the Event Hub deployment in line with Miro best practices and leverage all the internal tooling around Kubernetes, Istio, and Terraform.</li><li>While Event Hub had very few incidents during its lifespan, maintenance and upgrades were a delicate matter. It was now running on several EC2 instances. We knew that losing even just one of them would have meant hours of downtime. The number of moving parts was destined to increase with the growth in Miro users. And so was the probability of a catastrophic failure.</li></ol><h1 id="the-migration-2023">The migration: 2023</h1><p>We decided to migrate, but now we needed to understand how to make it happen.</p><p><em>“Plans are of little importance, but planning is essential” — Winston Churchill.</em></p><figure class="kg-card kg-image-card kg-card-hascaption"><img src="https://miro.medium.com/v2/resize:fit:1400/1*-np_lSdG-TrSGGzrBkAZkw.png" class="kg-image" alt="Birds migrating" loading="lazy"><figcaption><em>Birds migrating</em></figcaption></figure><h2 id="1-define-the-plan">1. Define the plan</h2><p>We started the process knowing that we needed a plan. But we all agreed that we would not have all the knowledge we needed at the beginning, so we should be adaptable to changing the plan as we progressed. We had a regular sync on progress to understand if we needed to update the plan.</p><h2 id="2-create-infrastructure">2. Create infrastructure</h2><p>We needed somewhere to deploy Event Hub, so we first created the infrastructure needed for our deployment. We could reuse some parts of the existing infrastructure, like Kubernetes, but other parts, like Kafka, had to be created.</p><h2 id="3-observability">3. Observability</h2><p>The previous iteration of Event Hub had been running for years. The engineering team that cared lovingly for this system grew intimately familiar with its usage profile. But the significant design changes we were about to make were a source of uncertainty. Observability proved to be crucial to proceed with confidence. Luckily, a lot of instrumentation at the API Gateway, Kubernetes, and Infrastructure level was provided out of the box by Miro internal tooling. Moreover, the experience with the previous system informed us where to focus our attention first.</p><h2 id="4-migrate-event-hub-to-staging">4. Migrate Event Hub to staging</h2><p>Once we had the infrastructure necessary in the staging environment, we could deploy Event Hub to it. At this point we were able to go end to end. We could post an event into the API, move it through Kafka, and process it through the Spark Data Pipeline.</p><h2 id="5-load-test">5. Load test</h2><p>We were now running Event Hub in staging, but it was new infrastructure. We were unsure how it would perform, and if the infrastructure was correctly sized. Paired with the effort put toward observability highlighted above, we were able to run a load test that provided a realistic production volume of events. This required several iterations to correctly size the infrastructure to achieve the necessary performance. This also provided valuable insight into how we should define our auto-scaling policies.</p><h2 id="6-deploy-to-production">6. Deploy to production</h2><p>We were now confident that we could deploy Event Hub to production and begin the process of switching the event tracking over to it.</p><h2 id="7-prepare-the-data-pipelines">7. Prepare the data pipelines</h2><p>Before we could switch the traffic, we had to make some changes to the Spark Data Pipeline so it could process the events from the old Event Hub and the new Event Hub deployments.</p><h2 id="8-switch-clients">8. Switch Clients</h2><p>Now we could switch over the event tracking. We had identified ~40 different services/clients sending events to Event Hub. Each one needed to be updated to point to the new infrastructure. We started with the clients with the lowest priority and/or least critical events first. This allowed us to validate the full end-to-end flow while minimizing the risk if we did hit a problem. It took about 6 weeks to switch over all the clients and lots of coordination with different engineering teams.</p><h2 id="9-success">9. Success</h2><p>By August 2023 we had migrated to the new deployment and were processing ~3.5 billion events per day. We had successfully switched to the new Event Hub deployment and not lost a single event or caused any delays to the data we deliver to the downstream use cases.</p><h1 id="the-lessons-we-learned">The lessons we learned</h1><p>During the migration we learned a few valuable lessons:</p><ul><li><strong><strong>Make your work visible</strong></strong></li></ul><p>When many teams, streams, and stakeholders are involved, you must be transparent about the work in progress and what has been completed.</p><ul><li><strong><strong>Individuals reaching out made a big difference</strong></strong></li></ul><p>While we aligned on expectations and priorities, we hit the inevitable problem that teams had conflicting priorities, deadlines, etc. We found out that individuals reaching out to people made a big difference. We were able to provide the context and specific help to each of the teams to help the work to be completed faster.</p><ul><li><strong><strong>Bake in event quality from the beginning</strong></strong></li></ul><p>If you’re starting from scratch, then make event quality a first class concern from the beginning. Going back and adding it was much more difficult and carried more risk.</p><ul><li><strong><strong>Lean on internal tooling</strong></strong></li></ul><p>A lot of the machinery that allowed us to pull this off was available because of the excellent work other teams in Miro did. Event Hub evolved from being directly exposed to the public internet through a simple load balancer to benefitting from state of the art scalable infrastructure and DDoS protection.</p>
+        </section>
 
 
-        </article>
-
-    </div>
+    </article>
 </main>
 
-<aside class="read-next outer">
-    <div class="inner">
-        <div class="read-next-feed">
+
+    <section class="footer-cta ">
+        <div class="inner">
+            
+            <a class="footer-cta-button" href="#/portal" data-portal>
+                <div class="footer-cta-input">Enter your email</div>
+                <span>Subscribe</span>
+            </a>
+        </div>
+    </section>
 
 
-                <article class="post-card post tag-my-talks tag-big-data tag-analytics ">
+
+
+            <aside class="read-more-wrap">
+                <div class="read-more inner">
+                        
+<article class="post-card post ">
 
     <a class="post-card-image-link" href="/2019/12/16/big-data-ldn-2019-taking-control-of-user-analytics-with-snowplow/">
         <img class="post-card-image"
@@ -225,153 +223,167 @@
                     /content/images/size/w600/2020/07/tmp-2.png 600w,
                     /content/images/size/w1000/2020/07/tmp-2.png 1000w,
                     /content/images/size/w2000/2020/07/tmp-2.png 2000w"
-            sizes="(max-width: 1000px) 400px, 700px"
-            loading="lazy"
+            sizes="(max-width: 1000px) 400px, 800px"
             src="/content/images/size/w600/2020/07/tmp-2.png"
             alt="Big Data LDN 2019: Taking control of user analytics with Snowplow"
+            loading="lazy"
         />
     </a>
 
     <div class="post-card-content">
 
         <a class="post-card-content-link" href="/2019/12/16/big-data-ldn-2019-taking-control-of-user-analytics-with-snowplow/">
-
             <header class="post-card-header">
-                    <div class="post-card-primary-tag">My Talks</div>
                 <h2 class="post-card-title">Big Data LDN 2019: Taking control of user analytics with Snowplow</h2>
             </header>
-
-            <section class="post-card-excerpt">
-                    <p>User analytics is well established at Auto Trader but breakthroughs in the cloud, big data and streaming technologies offer clear benefits above and beyond what we could do today. This</p>
-            </section>
-
+            <div class="post-card-excerpt">
+                <p>User analytics is well established at Auto Trader but breakthroughs in the cloud, big data and streaming technologies offer clear benefits above and beyond what we could do today. This talk describes how we migrated to Snowplow on Google Cloud for our user-analytics platform. Snowplow is an event streaming pipeline</p>
+            </div>
         </a>
 
         <footer class="post-card-meta">
             <ul class="author-list">
                 <li class="author-list-item">
-            
-                    <div class="author-name-tooltip">
-                        Paul Doran
-                    </div>
-            
                     <a href="/author/dorzey/" class="static-avatar">
-                        <img class="author-profile-image" src="//www.gravatar.com/avatar/f55e27c409ab3c44635babf13150bb7e?s&#x3D;250&amp;d&#x3D;mm&amp;r&#x3D;x" alt="Paul Doran" />
+                        <img class="author-profile-image" src="//www.gravatar.com/avatar/f55e27c409ab3c44635babf13150bb7e?s&#x3D;250&amp;d&#x3D;mm&amp;r&#x3D;x" alt="Paul Doran" loading="lazy" />
                     </a>
                 </li>
             </ul>
             <div class="post-card-byline-content">
-                <span><a href="/author/dorzey/">Paul Doran</a></span>
-                <span class="post-card-byline-date"><time datetime="2019-12-16">16 Dec 2019</time> <span class="bull">&bull;</span> 1 min read</span>
+                <span class="post-card-byline-author"><a href="/author/dorzey/">Paul Doran</a></span>
+                <span class="post-card-byline-date"><time datetime="2019-12-16">Dec 16, 2019</time> <span class="bull">&bull;</span> 1 min read</span>
             </div>
         </footer>
 
     </div>
 
 </article>
-        </div>
-    </div>
-</aside>
+                        
+<article class="post-card post ">
 
+    <a class="post-card-image-link" href="/2019/05/16/continuous-deployment-of-machine-learning-models/">
+        <img class="post-card-image"
+            srcset="/content/images/size/w300/2020/07/tmp-1.png 300w,
+                    /content/images/size/w600/2020/07/tmp-1.png 600w,
+                    /content/images/size/w1000/2020/07/tmp-1.png 1000w,
+                    /content/images/size/w2000/2020/07/tmp-1.png 2000w"
+            sizes="(max-width: 1000px) 400px, 800px"
+            src="/content/images/size/w600/2020/07/tmp-1.png"
+            alt="Continuous deployment of machine learning models"
+            loading="lazy"
+        />
+    </a>
 
+    <div class="post-card-content">
 
+        <a class="post-card-content-link" href="/2019/05/16/continuous-deployment-of-machine-learning-models/">
+            <header class="post-card-header">
+                <h2 class="post-card-title">Continuous deployment of machine learning models</h2>
+            </header>
+            <div class="post-card-excerpt">
+                <p>This talk describes how Auto Trader launched a suite of new machine learning models with the ability serve low-latency predictions in real time. These models are automatically retrained and redeployed using continuous deployment pipelines in our existing deployment infrastructure, making use of technology including Apache Spark, Airflow, Docker and Kubernetes.</p>
+            </div>
+        </a>
 
-        <footer class="site-footer outer">
-            <div class="site-footer-content inner">
-                <section class="copyright"><a href="http://www.dorzey.net">dorzey.net</a> &copy; 2023</section>
-                <nav class="site-footer-nav">
-                    <a href="http://www.dorzey.net">Latest Posts</a>
-                    
-                    <a href="https://twitter.com/dorzey" target="_blank" rel="noopener">Twitter</a>
-                    <a href="https://ghost.org" target="_blank" rel="noopener">Ghost</a>
-                </nav>
+        <footer class="post-card-meta">
+            <ul class="author-list">
+                <li class="author-list-item">
+                    <a href="/author/dorzey/" class="static-avatar">
+                        <img class="author-profile-image" src="//www.gravatar.com/avatar/f55e27c409ab3c44635babf13150bb7e?s&#x3D;250&amp;d&#x3D;mm&amp;r&#x3D;x" alt="Paul Doran" loading="lazy" />
+                    </a>
+                </li>
+            </ul>
+            <div class="post-card-byline-content">
+                <span class="post-card-byline-author"><a href="/author/dorzey/">Paul Doran</a></span>
+                <span class="post-card-byline-date"><time datetime="2019-05-16">May 16, 2019</time> <span class="bull">&bull;</span> 1 min read</span>
             </div>
         </footer>
 
     </div>
 
+</article>
+                        
+<article class="post-card post ">
 
-    <script
-        src="https://code.jquery.com/jquery-3.4.1.min.js"
-        integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
-        crossorigin="anonymous">
-    </script>
-    <script src="/assets/built/casper.js?v=6cfdb318e0"></script>
+    <a class="post-card-image-link" href="/2019/03/20/how-we-use-architectural-decision-records-adrs-on-data-engineering/">
+        <img class="post-card-image"
+            srcset="/content/images/size/w300/2020/07/tmp-3.png 300w,
+                    /content/images/size/w600/2020/07/tmp-3.png 600w,
+                    /content/images/size/w1000/2020/07/tmp-3.png 1000w,
+                    /content/images/size/w2000/2020/07/tmp-3.png 2000w"
+            sizes="(max-width: 1000px) 400px, 800px"
+            src="/content/images/size/w600/2020/07/tmp-3.png"
+            alt="How we use Architectural Decision Records (ADRs) on Data Engineering"
+            loading="lazy"
+        />
+    </a>
 
-    <script>
-        // Parse the URL parameter
-        function getParameterByName(name, url) {
-            if (!url) url = window.location.href;
-            name = name.replace(/[\[\]]/g, "\\$&");
-            var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
-                results = regex.exec(url);
-            if (!results) return null;
-            if (!results[2]) return '';
-            return decodeURIComponent(results[2].replace(/\+/g, " "));
-        }
+    <div class="post-card-content">
 
-        // Give the parameter a variable name
-        var action = getParameterByName('action');
-        var success = getParameterByName('success');
+        <a class="post-card-content-link" href="/2019/03/20/how-we-use-architectural-decision-records-adrs-on-data-engineering/">
+            <header class="post-card-header">
+                <h2 class="post-card-title">How we use Architectural Decision Records (ADRs) on Data Engineering</h2>
+            </header>
+            <div class="post-card-excerpt">
+                <p>When I joined our data engineers over a year ago they had already adopted Architectural Decision Records (ADRs) to document architectural decisions made whilst building Auto Trader’s Data Platform. ADRs are listed in ThoughtWorks’ Technology Radar as a technique to adopt; our data engineers were the first team I’</p>
+            </div>
+        </a>
 
-        $(document).ready(function () {
-            if (action == 'subscribe' && (success === null || success === 'true')) {
-                $('body').addClass('subscribe-success');
-            }
+        <footer class="post-card-meta">
+            <ul class="author-list">
+                <li class="author-list-item">
+                    <a href="/author/dorzey/" class="static-avatar">
+                        <img class="author-profile-image" src="//www.gravatar.com/avatar/f55e27c409ab3c44635babf13150bb7e?s&#x3D;250&amp;d&#x3D;mm&amp;r&#x3D;x" alt="Paul Doran" loading="lazy" />
+                    </a>
+                </li>
+            </ul>
+            <div class="post-card-byline-content">
+                <span class="post-card-byline-author"><a href="/author/dorzey/">Paul Doran</a></span>
+                <span class="post-card-byline-date"><time datetime="2019-03-20">Mar 20, 2019</time> <span class="bull">&bull;</span> 4 min read</span>
+            </div>
+        </footer>
 
-            if (action == 'subscribe' && success === 'false') {
-                $('body').addClass('subscribe-failure');
-            }
+    </div>
 
-            $('.subscribe-notification .subscribe-close-button').click(function () {
-                $('.subscribe-notification').addClass('close');
-            });
+</article>
+                </div>
+            </aside>
 
-            // Reset form on opening subscrion overlay
-            $('.subscribe-button').click(function() {
-                $('.subscribe-overlay form').removeClass();
-                $('.subscribe-email').val('');
-            });
-        });
-    </script>
 
-    <script>
-    $(document).ready(function () {
-        // FitVids - start
-        var $postContent = $(".post-full-content");
-        $postContent.fitVids();
-        // FitVids - end
 
-        // Replace nav with title on scroll - start
-        Casper.stickyNavTitle({
-            navSelector: '.site-nav-main',
-            titleSelector: '.post-full-title',
-            activeClass: 'nav-post-title-active'
-        });
-        // Replace nav with title on scroll - end
+    </div>
 
-        // Hover on avatar
-        var hoverTimeout;
-        $('.author-list-item').hover(function () {
-            var $this = $(this);
+    <footer class="site-footer outer">
+        <div class="inner">
+            <section class="copyright"><a href="http://www.dorzey.net">dorzey.net</a> &copy; 2023</section>
+            <nav class="site-footer-nav">
+                
+            </nav>
+            <div><a href="https://ghost.org/" target="_blank" rel="noopener">Powered by Ghost</a></div>
+        </div>
+    </footer>
 
-            clearTimeout(hoverTimeout);
+</div>
 
-            $('.author-card').removeClass('hovered');
-            $(this).children('.author-card').addClass('hovered');
 
-        }, function () {
-            var $this = $(this);
-
-            hoverTimeout = setTimeout(function () {
-                $this.children('.author-card').removeClass('hovered');
-            }, 800);
-        });
+<script
+    src="https://code.jquery.com/jquery-3.5.1.min.js"
+    integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0="
+    crossorigin="anonymous">
+</script>
+<script src="/assets/built/casper.js?v=bdc8b6f34c"></script>
+<script>
+$(document).ready(function () {
+    // Mobile Menu Trigger
+    $('.gh-burger').click(function () {
+        $('body').toggleClass('gh-head-open');
     });
+    // FitVids - Makes video embeds responsive
+    $(".gh-content").fitVids();
+});
 </script>
 
 
-    
 
 </body>
 </html>
