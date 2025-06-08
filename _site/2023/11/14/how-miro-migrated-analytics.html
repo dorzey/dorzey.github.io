@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>How Miro migrated its analytics event tracking system | dorzey.net</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="How Miro migrated its analytics event tracking system" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="In this post, we’ll take you behind the scenes of how we migrated our analytics event system — responsible for handling ~3.5 billion events per day — without losing a single event. We’ll go into the technical details and the strategy we used that allowed us to leverage Kubernetes, Kafka, Apache Spark, and Airflow to safeguard the events that power some of Miro’s key business decisions." />
+<meta property="og:description" content="In this post, we’ll take you behind the scenes of how we migrated our analytics event system — responsible for handling ~3.5 billion events per day — without losing a single event. We’ll go into the technical details and the strategy we used that allowed us to leverage Kubernetes, Kafka, Apache Spark, and Airflow to safeguard the events that power some of Miro’s key business decisions." />
+<link rel="canonical" href="https://medium.com/miro-engineering/how-miro-migrated-its-analytics-event-tracking-system-46a6b1d2622e" />
+<meta property="og:url" content="https://medium.com/miro-engineering/how-miro-migrated-its-analytics-event-tracking-system-46a6b1d2622e" />
+<meta property="og:site_name" content="dorzey.net" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2023-11-14T00:00:00+01:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="How Miro migrated its analytics event tracking system" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2023-11-14T00:00:00+01:00","datePublished":"2023-11-14T00:00:00+01:00","description":"In this post, we’ll take you behind the scenes of how we migrated our analytics event system — responsible for handling ~3.5 billion events per day — without losing a single event. We’ll go into the technical details and the strategy we used that allowed us to leverage Kubernetes, Kafka, Apache Spark, and Airflow to safeguard the events that power some of Miro’s key business decisions.","headline":"How Miro migrated its analytics event tracking system","mainEntityOfPage":{"@type":"WebPage","@id":"https://medium.com/miro-engineering/how-miro-migrated-its-analytics-event-tracking-system-46a6b1d2622e"},"url":"https://medium.com/miro-engineering/how-miro-migrated-its-analytics-event-tracking-system-46a6b1d2622e"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://dorzey.net//feed.xml" title="dorzey.net" /></head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">dorzey.net</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/about/">About</a><a class="page-link" href="/talks/">My Talks</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">How Miro migrated its analytics event tracking system</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2023-11-14T00:00:00+01:00" itemprop="datePublished">Nov 14, 2023
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <p>In this post, we’ll take you behind the scenes of how we migrated our analytics event system — responsible for handling ~3.5 billion events per day — without losing a single event. We’ll go into the technical details and the strategy we used that allowed us to leverage Kubernetes, Kafka, Apache Spark, and Airflow to safeguard the events that power some of Miro’s key business decisions.</p>
+
+<h1 id="in-the-beginning-20172021">In the beginning: 2017–2021</h1>
+<p>By 2017 Miro had reached 1M users. In September of that year, Miro put its in-house analytics event tracking system, called Event Hub, into production. On its first day it received its first 1.5 million events. Event Hub consists of the following:</p>
+
+<ul>
+  <li>A Spring Boot API that collects events from various backend and frontend clients; the events are written to a Kafka topic;</li>
+  <li>A Kafka that is used as a durable message broker;</li>
+  <li>An Apache Spark Data Pipeline, in Java, that runs once a day. It conforms the events into a common format, applies enrichments, and makes the events available for downstream use cases.
+The initial deployment of Event Hub was done as a raw deployment on EC2. Only some parts of the deployment were done as infrastructure-as-code, and it turned out to be remarkably stable with very few incidents.</li>
+</ul>
+
+<h1 id="during-hypergrowth-20212022">During Hypergrowth: 2021–2022</h1>
+<p>During 2021–2022, Miro experienced dramatic growth, reaching 30M registered users in 2021. In turn, our Event Hub instance was receiving around 2.5 billion events per day.</p>
+
+<p>Miro also grew its data team during this time, which helped us improve our data capabilities. This led to the data pipeline being simplified, re-implemented in Scala Spark, migrated to Databricks, and being orchestrated via Airflow. This allowed the team to increase the frequency the pipeline ran to hourly. This allowed us to both provide fresher data to downstream analytics use cases and reduce our mean time to recover if there was a failure.</p>
+
+<p>In this period, Miro also adopted Kubernetes and outlined a golden path for teams to deploy their services.</p>
+
+<h1 id="decision-time-2023">Decision time: 2023</h1>
+<p>By the beginning of 2023 we were processing around 3 billion events per day. At the same time, a few circumstances coincided which altogether led us to the decision of completing the migration:</p>
+
+<ol>
+  <li>Event quality was beginning to suffer. This negatively impacted Miro’s ability to make reliable data-informed decisions. At the beginning, Miro deliberately chose a permissive model for events, but once the organization scaled this became unsustainable. We wanted to introduce Event Validation to improve the quality, but this would have been risky to do on the existing infrastructure.</li>
+  <li>We were asked to bring the Event Hub deployment in line with Miro best practices and leverage all the internal tooling around Kubernetes, Istio, and Terraform.</li>
+  <li>While Event Hub had very few incidents during its lifespan, maintenance and upgrades were a delicate matter. It was now running on several EC2 instances. We knew that losing even just one of them would have meant hours of downtime. The number of moving parts was destined to increase with the growth in Miro users. And so was the probability of a catastrophic failure.</li>
+</ol>
+
+<h1 id="the-migration-2023">The migration: 2023</h1>
+<p>We decided to migrate, but now we needed to understand how to make it happen.</p>
+
+<blockquote>
+  <p>“Plans are of little importance, but planning is essential” — Winston Churchill.</p>
+</blockquote>
+
+<p><img src="/assets/images/birds.png" alt="Birds migrating
+" /></p>
+
+<h2 id="1-define-the-plan">1. Define the plan</h2>
+<p>We started the process knowing that we needed a plan. But we all agreed that we would not have all the knowledge we needed at the beginning, so we should be adaptable to changing the plan as we progressed. We had a regular sync on progress to understand if we needed to update the plan.</p>
+
+<h2 id="2-create-infrastructure">2. Create infrastructure</h2>
+<p>We needed somewhere to deploy Event Hub, so we first created the infrastructure needed for our deployment. We could reuse some parts of the existing infrastructure, like Kubernetes, but other parts, like Kafka, had to be created.</p>
+
+<h2 id="3-observability">3. Observability</h2>
+<p>The previous iteration of Event Hub had been running for years. The engineering team that cared lovingly for this system grew intimately familiar with its usage profile. But the significant design changes we were about to make were a source of uncertainty. Observability proved to be crucial to proceed with confidence. Luckily, a lot of instrumentation at the API Gateway, Kubernetes, and Infrastructure level was provided out of the box by Miro internal tooling. Moreover, the experience with the previous system informed us where to focus our attention first.</p>
+
+<h2 id="4-migrate-event-hub-to-staging">4. Migrate Event Hub to staging</h2>
+<p>Once we had the infrastructure necessary in the staging environment, we could deploy Event Hub to it. At this point we were able to go end to end. We could post an event into the API, move it through Kafka, and process it through the Spark Data Pipeline.</p>
+
+<h2 id="5-load-test">5. Load test</h2>
+<p>We were now running Event Hub in staging, but it was new infrastructure. We were unsure how it would perform, and if the infrastructure was correctly sized. Paired with the effort put toward observability highlighted above, we were able to run a load test that provided a realistic production volume of events. This required several iterations to correctly size the infrastructure to achieve the necessary performance. This also provided valuable insight into how we should define our auto-scaling policies.</p>
+
+<h2 id="6-deploy-to-production">6. Deploy to production</h2>
+<p>We were now confident that we could deploy Event Hub to production and begin the process of switching the event tracking over to it.</p>
+
+<h2 id="7-prepare-the-data-pipelines">7. Prepare the data pipelines</h2>
+<p>Before we could switch the traffic, we had to make some changes to the Spark Data Pipeline so it could process the events from the old Event Hub and the new Event Hub deployments.</p>
+
+<h2 id="8-switch-clients">8. Switch Clients</h2>
+<p>Now we could switch over the event tracking. We had identified ~40 different services/clients sending events to Event Hub. Each one needed to be updated to point to the new infrastructure. We started with the clients with the lowest priority and/or least critical events first. This allowed us to validate the full end-to-end flow while minimizing the risk if we did hit a problem. It took about 6 weeks to switch over all the clients and lots of coordination with different engineering teams.</p>
+
+<h2 id="9-success">9. Success</h2>
+<p>By August 2023 we had migrated to the new deployment and were processing ~3.5 billion events per day. We had successfully switched to the new Event Hub deployment and not lost a single event or caused any delays to the data we deliver to the downstream use cases.</p>
+
+<h1 id="the-lessons-we-learned">The lessons we learned</h1>
+<p>During the migration we learned a few valuable lessons:</p>
+
+<ul>
+  <li><em>Make your work visible</em></li>
+</ul>
+
+<p>When many teams, streams, and stakeholders are involved, you must be transparent about the work in progress and what has been completed.</p>
+
+<ul>
+  <li><em>Individuals reaching out made a big difference</em></li>
+</ul>
+
+<p>While we aligned on expectations and priorities, we hit the inevitable problem that teams had conflicting priorities, deadlines, etc. We found out that individuals reaching out to people made a big difference. We were able to provide the context and specific help to each of the teams to help the work to be completed faster.</p>
+
+<ul>
+  <li><em>Bake in event quality from the beginning</em></li>
+</ul>
+
+<p>If you’re starting from scratch, then make event quality a first class concern from the beginning. Going back and adding it was much more difficult and carried more risk.</p>
+
+<ul>
+  <li><em>Lean on internal tooling</em></li>
+</ul>
+
+<p>A lot of the machinery that allowed us to pull this off was available because of the excellent work other teams in Miro did. Event Hub evolved from being directly exposed to the public internet through a simple load balancer to benefitting from state of the art scalable infrastructure and DDoS protection.</p>
+
+  </div><a class="u-url" href="/2023/11/14/how-miro-migrated-analytics.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">dorzey.net</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">dorzey.net</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/dorzey"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">dorzey</span></a></li><li><a href="https://www.linkedin.com/in/psdoran"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#linkedin"></use></svg> <span class="username">psdoran</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>My thoughts on AI, Machine Learning, Data and Analytics.</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>
