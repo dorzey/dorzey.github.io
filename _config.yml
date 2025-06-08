@@ -27,6 +27,7 @@ github_username:  dorzey
 linkedin_username: psdoran
 favicon: "/favicon.png" # path to your favicon file
 show_excerpts: true
+author: Paul Doran
 
 collections:
   talks:
