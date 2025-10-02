@@ -3,6 +3,7 @@ layout: post
 title: "How Miro migrated its analytics event tracking system"
 canonical_url: "https://medium.com/miro-engineering/how-miro-migrated-its-analytics-event-tracking-system-46a6b1d2622e"
 date: 2023-11-14
+image: /assets/images/birds.png
 ---
 
 In this post, we’ll take you behind the scenes of how we migrated our analytics event system — responsible for handling ~3.5 billion events per day — without losing a single event. We’ll go into the technical details and the strategy we used that allowed us to leverage Kubernetes, Kafka, Apache Spark, and Airflow to safeguard the events that power some of Miro’s key business decisions.
