@@ -31,11 +31,11 @@ But, it's ok, because company ABC is selling a tool that fixes all these problem
 
 Whilst your capacity might be fixed, you can control what gets worked on. You need to drive the focus towards what delivers the most value; not what's most urgent nor what the loudest person is asking for.
 
-It doesn't matter what framework you adopt (MoSCoW, RICE, etc.) the important aspect is aligning everyone on how that framework denotes the value. The business the team is in and their context will change what value means for them. For example, it could be on revenue, or retention, or performance, etc.
+It doesn't matter what framework you adopt (MoSCoW, RICE, etc.), the important aspect is aligning everyone on how that framework denotes the value. The business the team is in and their context will change what value means for them. For example, it could be on revenue, or retention, or performance, etc.
 
 But you need a set of things to prioritise, with each thing a similar size. Trying to prioritise a 12 month migration project against an effort to improve query performance is impossible. They are not comparable. But splitting that big migration project up into smaller chunks opens up the ability to decide how to prioritise them against each other. It’s important that each chunk delivers value; this is not just about decomposing work but thinking in terms of releasable value. It adds adaptability into the whole process; maybe we realise part way through the migration that completing it is lower value than other work. This allows the team and stakeholders to be clear on the value, get faster feedback, and reduce risk.
 
-Digital tooling is both a blessing and a curse. It enables you to create and manage a shareable and consumable backlog, but it also allows it to grow infinitely large. Having too many things to prioritise amongst can be both frustrating and time consuming. More things will steal more of your time and attention. Don't be afraid to delete work from your backlog; if it's valuable then someone else will ask for it.
+Digital tools are both a blessing and a curse. They enablea you to create and manage a shareable and consumable backlog, but they also allow it to grow infinitely large. Having too many things to prioritise amongst can be both frustrating and time consuming. More things will steal more of your time and attention. Don't be afraid to delete work from your backlog; if it's valuable then someone else will ask for it.
 
 None of this is new, agile and lean methodologies have long preached incremental delivery. The one thing they don't make clear is how you get to that point - ruthless prioritisation.
 
